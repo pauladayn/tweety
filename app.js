@@ -1,30 +1,32 @@
-const express = require("express");
-const app = express();
-const chalk = require("chalk");
-const morgan = require("morgan");
+const express = require( 'express' );
+const morgan = require('morgan'); //middleware application logger
+const nunjucks = require( 'nunjucks' );
 
-/*var fs = require('fs')
-var path = require('path') //The path module provides utilities for working with file and directory paths.
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
-*/
-/*
-let loggeo = function (req, res, next) {
-  console.log(chalk.green("logged"));
-  next();
-};
+const app = express(); // crea una instancia de una aplicación de express
 
-app.use(loggeo);
-*/
+// Configurando Nunjucks
+app.set('view engine', 'html'); // hace que res.render funcione con archivos html
+app.engine('html', nunjucks.render); // cuando le den archivos html a res.render, va a usar nunjucks
+nunjucks.configure('views'); // apunta a nunjucks al directorio correcto para los templates
 
-app.get("/", function (req, res) {
-  res.send("Hello World!");
+app.use(express.static('./public'))
+
+app.use(morgan('tiny'))
+
+let tweetsDeEjemplo = [
+    { id: 1, name: "juan", content: "este es un tweeettt de juan" },
+    { id: 2, name: "carlos", content: "este es un tweeettt de carlos" },
+    { id: 3, name: "pepe", content: "este es un tweeettt de pepe" },
+];
+
+
+app.get('/', function (req, res) {
+    res.render( 'index', { tweets: tweetsDeEjemplo });
 });
 
-var port = 3000;
 
-app.use(morgan("tiny"));
 
-//app.use(morgan('combined', { stream: accessLogStream })) 
-app.listen(port, function () {
-  console.log("Servidor corriendo en el puerto 3000");
+app.listen(3000, function(){
+    console.log('Estas escuhando en el puerto 3000')
 });
+
